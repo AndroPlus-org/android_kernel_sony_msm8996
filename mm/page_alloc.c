@@ -1100,34 +1100,33 @@ static void change_pageblock_range(struct page *pageblock_page,
 }
 
 /*
- * When we are falling back to another migratetype during allocation, try to
- * steal extra free pages from the same pageblocks to satisfy further
- * allocations, instead of polluting multiple pageblocks.
+ * If breaking a large block of pages, move all free pages to the preferred
+ * allocation list. If falling back for a reclaimable kernel allocation, be
+ * more aggressive about taking ownership of free pages.
  *
- * If we are stealing a relatively large buddy page, it is likely there will
- * be more free pages in the pageblock, so try to steal them all. For
- * reclaimable and unmovable allocations, we steal regardless of page size,
- * as fragmentation caused by those allocations polluting movable pageblocks
- * is worse than movable allocations stealing from unmovable and reclaimable
- * pageblocks.
+ * On the other hand, never change migration type of MIGRATE_CMA pageblocks
+ * nor move CMA pages to different free lists. We don't want unmovable pages
+ * to be allocated from MIGRATE_CMA areas.
  *
- * If we claim more than half of the pageblock, change pageblock's migratetype
- * as well.
+ * Returns the new migratetype of the pageblock (or the same old migratetype
+ * if it was unchanged).
  */
-static void try_to_steal_freepages(struct zone *zone, struct page *page,
+static int try_to_steal_freepages(struct zone *zone, struct page *page,
 				  int start_type, int fallback_type)
 {
 	int current_order = page_order(page);
 
+	if (is_migrate_cma(fallback_type))
+		return fallback_type;
+
 	/* Take ownership for orders >= pageblock_order */
 	if (current_order >= pageblock_order) {
 		change_pageblock_range(page, current_order, start_type);
-		return;
+		return start_type;
 	}
 
 	if (current_order >= pageblock_order / 2 ||
 	    start_type == MIGRATE_RECLAIMABLE ||
-	    start_type == MIGRATE_UNMOVABLE ||
 	    page_group_by_mobility_disabled) {
 		int pages;
 
@@ -1135,9 +1134,15 @@ static void try_to_steal_freepages(struct zone *zone, struct page *page,
 
 		/* Claim the whole block if over half of it is free */
 		if (pages >= (1 << (pageblock_order-1)) ||
-				page_group_by_mobility_disabled)
+				page_group_by_mobility_disabled) {
+
 			set_pageblock_migratetype(page, start_type);
+			return start_type;
+		}
+
 	}
+
+	return fallback_type;
 }
 
 /* Remove an element from the buddy allocator from the fallback list */
@@ -1147,6 +1152,7 @@ __rmqueue_fallback(struct zone *zone, unsigned int order, int start_migratetype)
 	struct free_area *area;
 	unsigned int current_order;
 	struct page *page;
+	int migratetype, new_type, i;
 
 	/* Find the largest possible block of pages in the other list */
 	for (current_order = MAX_ORDER-1;
@@ -1169,24 +1175,22 @@ __rmqueue_fallback(struct zone *zone, unsigned int order, int start_migratetype)
 					struct page, lru);
 			area->nr_free--;
 
-			if (!is_migrate_cma(migratetype)) {
-				try_to_steal_freepages(zone, page,
-							start_migratetype,
-							migratetype);
-			} else {
-				/*
-				 * When borrowing from MIGRATE_CMA, we need to
-				 * release the excess buddy pages to CMA
-				 * itself, and we do not try to steal extra
-				 * free pages.
-				 */
-				buddy_type = migratetype;
-			}
+			new_type = try_to_steal_freepages(zone, page,
+							  start_migratetype,
+							  migratetype);
 
 			/* Remove the page from the freelists */
 			list_del(&page->lru);
 			rmv_page_order(page);
 
+			/*
+			 * Borrow the excess buddy pages as well, irrespective
+			 * of whether we stole freepages, or took ownership of
+			 * the pageblock or not.
+			 *
+			 * Exception: When borrowing from MIGRATE_CMA, release
+			 * the excess buddy pages to CMA itself.
+			 */
 			expand(zone, page, order, current_order, area,
 					buddy_type);
 
@@ -1201,7 +1205,7 @@ __rmqueue_fallback(struct zone *zone, unsigned int order, int start_migratetype)
 			set_freepage_migratetype(page, buddy_type);
 
 			trace_mm_page_alloc_extfrag(page, order, current_order,
-				start_migratetype, migratetype);
+				start_migratetype, new_type);
 
 			return page;
 		}
