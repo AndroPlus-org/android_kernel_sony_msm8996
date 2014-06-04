@@ -1118,7 +1118,9 @@ static int try_to_steal_freepages(struct zone *zone, struct page *page,
 
 	/*
 	 * When borrowing from MIGRATE_CMA, we need to release the excess
-	 * buddy pages to CMA itself.
+	 * buddy pages to CMA itself. We also ensure the freepage_migratetype
+	 * is set to CMA so it is returned to the correct freelist in case
+	 * the page ends up being not actually allocated from the pcp lists.
 	 */
 	if (is_migrate_cma(fallback_type))
 		return fallback_type;
@@ -1189,6 +1191,12 @@ __rmqueue_fallback(struct zone *zone, unsigned int order, int start_migratetype)
 
 			expand(zone, page, order, current_order, area,
 			       new_type);
+			/* The freepage_migratetype may differ from pageblock's
+			 * migratetype depending on the decisions in
+			 * try_to_steal_freepages. This is OK as long as it does
+			 * not differ for MIGRATE_CMA type.
+			 */
+			set_freepage_migratetype(page, new_type);
 
 			trace_mm_page_alloc_extfrag(page, order, current_order,
 				start_migratetype, new_type);
