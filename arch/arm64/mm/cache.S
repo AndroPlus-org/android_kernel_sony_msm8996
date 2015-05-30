@@ -24,8 +24,6 @@
 #include <asm/cpufeature.h>
 #include <asm/alternative-asm.h>
 
-#include "proc-macros.S"
-
  /*
  *     flush_dcache_louis()
  *
