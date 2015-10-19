@@ -15,7 +15,7 @@ CFLAGS_android.o := -I$(src)
 
 obj-$(CONFIG_USB_GADGET)	+= udc/ function/ legacy/
 
-obj-$(CONFIG_USB_G_ANDROID)	+= g_android.o
+obj-$(CONFIG_USB_G_ANDROID)	+= g_android.o function/f_hid.o
 
 obj-$(CONFIG_USB_CI13XXX_MSM)	+= ci13xxx_msm.o
 
