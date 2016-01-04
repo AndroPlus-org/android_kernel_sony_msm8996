@@ -36,6 +36,10 @@
 #include <asm/page.h>
 #include <asm/virt.h>
 
+#ifdef CONFIG_KEXEC_HARDBOOT
+#include <asm/kexec.h>
+#endif
+
 #define KERNEL_RAM_VADDR	(PAGE_OFFSET + TEXT_OFFSET)
 
 #if (TEXT_OFFSET & 0xfff) != 0
@@ -230,6 +234,27 @@ section_table:
 #endif
 
 ENTRY(stext)
+#ifdef CONFIG_KEXEC_HARDBOOT
+	/* Check hardboot page for a kexec kernel */
+	ldr	x21, =KEXEC_HB_PAGE_ADDR
+	ldr	x22, [x21]
+	ldr	x23, =KEXEC_HB_PAGE_MAGIC
+	cmp	x22, x23
+	beq	setup_hardboot
+#endif
+	str	xzr, [x21, #40] // zero out booted-via-hardboot flag
+	ldr	x23, =(0xfeedf00d)
+	cmp	x22, x23
+	bne	not_hardboot_entry
+	ldr	x22, =(0xadeadc0d)
+	str	x22, [x21]
+	adr	x22, stext
+	str	x22, [x21, #24]
+	str	x0, [x21, #32]
+	str	x22, [x21, #40] // we are booted via hardboot
+	ldr	x22, [x0]
+	str	x22, [x21, #48]
+not_hardboot_entry:
 	mov	x21, x0				// x21=FDT
 	bl	el2_setup			// Drop to EL1, w20=cpu_boot_mode
 	bl	__calc_phys_offset		// x24=PHYS_OFFSET, x28=PHYS_OFFSET-PAGE_OFFSET
@@ -261,6 +286,16 @@ ENTRY(stext)
 	ldr	x12, [x23, #CPU_INFO_SETUP]
 	add	x12, x12, x28			// __virt_to_phys
 	br	x12				// initialise processor
+
+setup_hardboot:
+	/* x21 has address of hardboot page */
+	/* Clear hardboot page magic to avoid boot loop. */
+	str	xzr, [x21]
+	/* TODO: setup MMU and caches to speed up relocation */
+	/* Jump to post-reboot relocation code 4KB in hardboot reserve */
+	add	x21, x21, #PAGE_SIZE
+	br	x21
+
 ENDPROC(stext)
 
 /*
