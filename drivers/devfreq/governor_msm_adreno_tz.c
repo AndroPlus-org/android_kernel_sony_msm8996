@@ -557,8 +557,22 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 		__secure_tz_update_entry3(scm_data, sizeof(scm_data),
 					&val, sizeof(val), priv);
 	}
+
+	// AP: Tweak 27 MHz frequency to be used a bit more
+	if ((val == 0) && (level == 5) &&	// (5 = 180 MHz step)
+		((priv->bin.busy_time * 100 / priv->bin.total_time) < 98))
+		val = 1;
+
 	priv->bin.total_time = 0;
 	priv->bin.busy_time = 0;
+
+	// AP: Tweak not to peak up when we come from 27 MHz and need to ramp up
+	if ((val < -1) && (level == 6))
+		val = -1;
+
+	// AP: In general we do not ramp up more than 2 steps at once
+	if (val < -2)
+		val = -2;
 
 	/*
 	 * If the decision is to move to a different level, make sure the GPU
