@@ -208,6 +208,10 @@ struct ac_dbs_tuners {
 	int freq_responsiveness;
 	unsigned int cpus_up_rate;
 	unsigned int cpus_down_rate;
+	int pump_inc_step;
+	int pump_inc_step_at_min_freq;
+	int pump_dec_step;
+	int pump_dec_step_at_min_freq;
 };
 
 /* Common Governor data across policies */
