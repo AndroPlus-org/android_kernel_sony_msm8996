@@ -111,3 +111,5 @@ CFLAGS_board-rdtags.o  := \
        \"$(if $(SEMC_SYSTEM_VERSION),$(SEMC_SYSTEM_VERSION),private)\""
 obj-$(CONFIG_ARCH_MSM8996) += console_setup.o
 obj-$(CONFIG_SUBSYS_LAST_ERR_LOG) += last_subsys_errlog.o
+
+obj-$(CONFIG_STATE_NOTIFIER)		+= state_notifier.o
