@@ -65,7 +65,7 @@
 		qcom,base-leakage-coefficient = <34>;
 		qcom,lm-limit = <6000>;
 
-		qcom,initial-pwrlevel = <2>;
+		qcom,initial-pwrlevel = <3>;
 
 		qcom,idle-timeout = <80>; //msecs
 		/*
