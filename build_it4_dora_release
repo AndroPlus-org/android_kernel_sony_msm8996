@@ -41,7 +41,7 @@ then
 		rm -f boot.img
 
 		### Copy zip to my desktop
-		dd if=XP_AndroPlusKernel_Permissive_v.zip of="/mnt/hgfs/VMShare/デスクトップ/XP_AndroPlusKernel_Permissive_v$version.zip"
+		cp XP_AndroPlusKernel_Permissive_v.zip uploads/XP_AndroPlusKernel_v$version.zip
 		cd ../kernel/
 	fi
 	

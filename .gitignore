@@ -183,3 +183,7 @@ scripts/asn1_compiler
 signing_key.priv
 signing_key.x509
 x509.genkey
+kernel/time/hz.bc
+kernel/time/timeconst.h
+kernel/x509_certificate_list
+scripts/basic/bin2c
