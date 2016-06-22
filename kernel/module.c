@@ -1147,6 +1147,21 @@ static int check_version(Elf_Shdr *sechdrs,
 	if(!strncmp("texfat", mod->name, 6))
 		return 1;
 
+	if(!strncmp("backlight", mod->name, 9))
+		return 1;
+
+	if(!strncmp("lcd", mod->name, 3))
+		return 1;
+
+	if(!strncmp("br_netfilter", mod->name, 12))
+		return 1;
+
+	if(!strncmp("generic_bl", mod->name, 10))
+		return 1;
+
+	if(!strncmp("rdbg", mod->name, 4))
+		return 1;
+
 	/* Exporting module didn't supply crcs?  OK, we're already tainted. */
 	if (!crc)
 		return 1;
