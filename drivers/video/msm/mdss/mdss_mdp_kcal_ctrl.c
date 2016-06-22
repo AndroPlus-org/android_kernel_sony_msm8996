@@ -65,6 +65,9 @@ static void mdss_mdp_kcal_update_pcc(struct kcal_lut_data *lut_data)
 {
 	u32 copyback = 0;
 	struct mdp_pcc_cfg_data pcc_config;
+	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
+	struct msm_fb_data_type *mfd = mdata->ctl_off->mfd;
+	u32 copy_from_kernel = 1;
 
 	memset(&pcc_config, 0, sizeof(struct mdp_pcc_cfg_data));
 
@@ -91,20 +94,23 @@ static void mdss_mdp_kcal_update_pcc(struct kcal_lut_data *lut_data)
 		pcc_config.b.b |= (0xffff << 16);
 	}
 
-	mdss_mdp_pcc_config(&pcc_config, &copyback);
+	mdss_mdp_pcc_config(mfd, &pcc_config, &copyback, copy_from_kernel);
 }
 
 static void mdss_mdp_kcal_read_pcc(struct kcal_lut_data *lut_data)
 {
 	u32 copyback = 0;
 	struct mdp_pcc_cfg_data pcc_config;
+	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
+	struct msm_fb_data_type *mfd = mdata->ctl_off->mfd;
+	u32 copy_from_kernel = 1;
 
 	memset(&pcc_config, 0, sizeof(struct mdp_pcc_cfg_data));
 
 	pcc_config.block = MDP_LOGICAL_BLOCK_DISP_0;
 	pcc_config.ops = MDP_PP_OPS_READ;
 
-	mdss_mdp_pcc_config(&pcc_config, &copyback);
+	mdss_mdp_pcc_config(mfd, &pcc_config, &copyback, copy_from_kernel);
 
 	/* LiveDisplay disables pcc when using default values and regs
 	 * are zeroed on pp resume, so throw these values out.
@@ -123,6 +129,7 @@ static void mdss_mdp_kcal_update_pa(struct kcal_lut_data *lut_data)
 	struct mdp_pa_cfg_data pa_config;
 	struct mdp_pa_v2_cfg_data pa_v2_config;
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
+	struct msm_fb_data_type *mfd = mdata->ctl_off->mfd;
 
 	if (mdata->mdp_rev < MDSS_MDP_HW_REV_103) {
 		memset(&pa_config, 0, sizeof(struct mdp_pa_cfg_data));
@@ -136,7 +143,7 @@ static void mdss_mdp_kcal_update_pa(struct kcal_lut_data *lut_data)
 		pa_config.pa_data.val_adj = lut_data->val;
 		pa_config.pa_data.cont_adj = lut_data->cont;
 
-		mdss_mdp_pa_config(&pa_config, &copyback);
+		mdss_mdp_pa_config(mfd, &pa_config, &copyback);
 	} else {
 		memset(&pa_v2_config, 0, sizeof(struct mdp_pa_v2_cfg_data));
 
@@ -157,7 +164,7 @@ static void mdss_mdp_kcal_update_pa(struct kcal_lut_data *lut_data)
 		pa_v2_config.pa_v2_data.global_val_adj = lut_data->val;
 		pa_v2_config.pa_v2_data.global_cont_adj = lut_data->cont;
 
-		mdss_mdp_pa_v2_config(&pa_v2_config, &copyback);
+		mdss_mdp_pa_v2_config(mfd, &pa_v2_config, &copyback);
 	}
 }
 
