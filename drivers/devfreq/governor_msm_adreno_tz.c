@@ -312,6 +312,9 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 	struct devfreq_dev_status stats;
 	int val, level = 0;
 	unsigned int scm_data[3];
+#if 1
+	int max_state_val = devfreq->profile->max_state - 1;
+#endif
 
 	/* keeps stats.private_data == NULL   */
 	result = devfreq->profile->get_dev_status(devfreq->dev.parent, &stats);
@@ -325,9 +328,20 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 #if 1
 	// scale busy time up based on adrenoboost parameter, only if MIN_BUSY exceeded...
 	if ((unsigned int)(priv->bin.busy_time + stats.busy_time) >= MIN_BUSY) {
-		priv->bin.busy_time += stats.busy_time * (1 + (adrenoboost*3)/2);
+		// only if enough cycles_without_boost passed, or already in a boost_period
+		if (priv->bin.cycles_without_boost++<(3 + ((priv->bin.last_level*6)/max_state_val)) && !priv->bin.boost_period) {
+			priv->bin.busy_time += stats.busy_time;
+		} else {
+			// reset cycles_without_boost to 0
+			priv->bin.cycles_without_boost = 0;
+			// if boost_period just started set it to boost period length, or decrease it
+			if (priv->bin.boost_period == 0) priv->bin.boost_period = 6 - ((priv->bin.last_level*4)/max_state_val); else priv->bin.boost_period--;
+			priv->bin.busy_time += stats.busy_time * ( 1 + (adrenoboost*10) / (8 + ((max_state_val+1)/(priv->bin.last_level+1)) ) );
+		}
 	} else {
 		priv->bin.busy_time += stats.busy_time;
+		priv->bin.cycles_without_boost = 0;
+		priv->bin.boost_period = 0;
 	}
 #else
 	priv->bin.busy_time += stats.busy_time;
@@ -394,6 +408,9 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 		level = max(level, 0);
 		level = min_t(int, level, devfreq->profile->max_state - 1);
 	}
+#if 1
+	priv->bin.last_level = level;
+#endif
 
 	*freq = devfreq->profile->freq_table[level];
 	return 0;
