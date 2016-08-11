@@ -127,6 +127,11 @@ config CPU_FREQ_DEFAULT_GOV_ALUCARD
 	select CPU_FREQ_GOV_ALUCARD
 	help
 
+config CPU_FREQ_DEFAULT_GOV_DARKNESS
+	bool "darkness"
+	select CPU_FREQ_GOV_DARKNESS
+	help
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -227,6 +232,11 @@ config CPU_FREQ_GOV_CONSERVATIVE
 
 config CPU_FREQ_GOV_ALUCARD
 	tristate "'alucard' cpufreq governor"
+	depends on CPU_FREQ
+	select CPU_FREQ_GOV_COMMON
+
+config CPU_FREQ_GOV_DARKNESS
+	tristate "'darkness' cpufreq governor"
 	depends on CPU_FREQ
 	select CPU_FREQ_GOV_COMMON
 
