@@ -1028,7 +1028,7 @@ static struct page *kimage_alloc_page(struct kimage *image,
 			addr + PAGE_SIZE)) {
 			printk("page %lx inside hardboot buffer, "
 				"removing\n", addr);
-			list_add(&page->lru, &image->unuseable_pages);
+			list_add(&page->lru, &image->unusable_pages);
 			continue;
 		}
 #endif
