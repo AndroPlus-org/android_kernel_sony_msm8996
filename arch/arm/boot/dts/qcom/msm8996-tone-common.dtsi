@@ -76,6 +76,14 @@
 		pinctrl-1 = <&msm_gpio_0 &msm_gpio_1 &msm_gpio_2 &msm_gpio_3>;
 		status = "disabled";
 	};
+	
+	kexechb {
+		linux,contiguous-region = <&kexechb_mem>;
+		kexec-hardboot-hole {
+                	compatible = "qcom,msm-contig-mem";
+			qcom,memblock-reserve = <0x1fd00000 0x00100000>;
+		};
+	};
 
 	/* UART: BLSP2 */
 	uart@07570000 {
@@ -526,6 +534,14 @@
 	ramoops {
 		compatible = "pstore-ramoops";
 		memory-region = <&pstore_reserve_mem>;
+	};
+	
+	kexechb_mem: kexechb_region@0 {
+			linux,reserve-contiguous-region;
+			linux,reserve-region;
+			reg = <0 0x1fd00000 0 0x00100000>;
+			linux,remove-completely;
+			label = "kexechb_mem";
 	};
 
 	qusb_phy0: qusb@7411000 {
