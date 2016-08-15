@@ -77,3 +77,4 @@ obj-$(CONFIG_POWERKEY_FORCECRASH) += powerkey_forcecrash.o
 obj-$(CONFIG_RAMDUMP_MEMDESC) += ramdump_mem_desc.o
 obj-$(CONFIG_DTV_TUNER_SMTEW10X) += dtv_tuner_drv.o
 obj-$(CONFIG_BCM_WLAN_RAMDUMP) += bcm_wlan_ramdump.o
+obj-y				+= sound_control.o
