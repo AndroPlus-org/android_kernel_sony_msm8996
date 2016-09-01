@@ -304,14 +304,26 @@ struct ac_ops {
 	void (*get_cpu_frequency_table)(int cpu);
 	void (*get_cpu_frequency_table_minmax)(struct cpufreq_policy *policy, 
 			int cpu);
+	void (*set_cpu_cached_tuners)(struct cpufreq_policy *policy, 
+			int cpu);
+	void (*get_cpu_cached_tuners)(struct cpufreq_policy *policy, 
+			int cpu);
 };
 
 struct dk_ops {
 	void (*get_cpu_frequency_table)(int cpu);
+	void (*set_cpu_cached_tuners)(struct cpufreq_policy *policy, 
+			int cpu);
+	void (*get_cpu_cached_tuners)(struct cpufreq_policy *policy, 
+			int cpu);
 };
 
 struct nm_ops {
 	void (*get_cpu_frequency_table)(int cpu);
+	void (*set_cpu_cached_tuners)(struct cpufreq_policy *policy, 
+			int cpu);
+	void (*get_cpu_cached_tuners)(struct cpufreq_policy *policy, 
+			int cpu);
 };
 
 static inline int delay_for_sampling_rate(unsigned int sampling_rate)
