@@ -327,6 +327,7 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 
 		dbs_data->cdata = cdata;
 		dbs_data->usage_count = 1;
+		dbs_data->cpu = cpu;
 		rc = cdata->init(dbs_data);
 		if (rc) {
 			pr_err("%s: POLICY_INIT: init() failed\n", __func__);
@@ -467,15 +468,12 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		} else if (dbs_data->cdata->governor == GOV_ALUCARD) {
 			ac_ops->get_cpu_frequency_table(cpu);
 			ac_ops->get_cpu_frequency_table_minmax(policy, cpu);
-			ac_ops->get_cpu_cached_tuners(policy, cpu);
 			ac_dbs_info->up_rate = 1;
 			ac_dbs_info->down_rate = 1;
 		} else if (dbs_data->cdata->governor == GOV_DARKNESS) {
 			dk_ops->get_cpu_frequency_table(cpu);
-			dk_ops->get_cpu_cached_tuners(policy, cpu);
 		} else if (dbs_data->cdata->governor == GOV_NIGHTMARE) {
 			nm_ops->get_cpu_frequency_table(cpu);
-			nm_ops->get_cpu_cached_tuners(policy, cpu);
 		} else {
 			od_dbs_info->rate_mult = 1;
 			od_dbs_info->sample_type = OD_NORMAL_SAMPLE;
@@ -492,15 +490,8 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		break;
 
 	case CPUFREQ_GOV_STOP:
-		if (dbs_data->cdata->governor == GOV_CONSERVATIVE) {
+		if (dbs_data->cdata->governor == GOV_CONSERVATIVE)
 			cs_dbs_info->enable = 0;
-		} else if (dbs_data->cdata->governor == GOV_ALUCARD) {
-			ac_ops->set_cpu_cached_tuners(policy, cpu);
-		} else if (dbs_data->cdata->governor == GOV_DARKNESS) {
-			dk_ops->set_cpu_cached_tuners(policy, cpu);
-		} else if (dbs_data->cdata->governor == GOV_NIGHTMARE) {
-			nm_ops->set_cpu_cached_tuners(policy, cpu);
-		}
 
 		gov_cancel_work(dbs_data, policy);
 
