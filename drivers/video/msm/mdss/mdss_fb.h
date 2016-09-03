@@ -61,7 +61,6 @@
 
 #define MDP_PP_AD_BL_LINEAR	0x0
 #define MDP_PP_AD_BL_LINEAR_INV	0x1
-#define MAX_LAYER_COUNT		0xC
 
 /* Enables Sonys feature Early Unblank for quick wakeup */
 
