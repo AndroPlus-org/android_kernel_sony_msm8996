@@ -1530,12 +1530,11 @@
 		qcom,mdss-dsi-t-clk-post = <0x1B>;
 		qcom,mdss-dsi-t-clk-pre = <0x2B>;
 		qcom,panel-supply-entries = <&dsi_panel_pwr_supply_full_incell>;
+		qcom,mdss-dsi-lp11-init;
 		qcom,mdss-dsi-bl-min-level = <1>;
 		qcom,mdss-dsi-bl-max-level = <4095>;
 		qcom,mdss-brightness-max-level = <4095>;
 		qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_wled";
-		qcom,ulps-enabled;
-		qcom,panel-allow-phy-poweroff;
 
 		somc,qpnp-lab-limit-maximum-current = <200>;
 		somc,qpnp-ibb-limit-maximum-current = <800>;
