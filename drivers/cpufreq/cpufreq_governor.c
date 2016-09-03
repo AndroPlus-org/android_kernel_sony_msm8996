@@ -477,8 +477,6 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 			ac_ops->set_cpu_cached_tuners(policy, cpu);
 		} else if (dbs_data->cdata->governor == GOV_DARKNESS) {
 			dk_ops->set_cpu_cached_tuners(policy, cpu);
-		} else if (dbs_data->cdata->governor == GOV_NIGHTMARE) {
-			nm_ops->set_cpu_cached_tuners(policy, cpu);
 		}
 
 		gov_cancel_work(dbs_data, policy);
