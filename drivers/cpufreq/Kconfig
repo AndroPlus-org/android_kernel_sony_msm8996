@@ -132,6 +132,11 @@ config CPU_FREQ_DEFAULT_GOV_DARKNESS
 	select CPU_FREQ_GOV_DARKNESS
 	help
 
+config CPU_FREQ_DEFAULT_GOV_NIGHTMARE
+	bool "nightmare"
+	select CPU_FREQ_GOV_NIGHTMARE
+help
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -239,6 +244,11 @@ config CPU_FREQ_GOV_DARKNESS
 	tristate "'darkness' cpufreq governor"
 	depends on CPU_FREQ
 	select CPU_FREQ_GOV_COMMON
+
+config CPU_FREQ_GOV_NIGHTMARE
+	tristate "'nightmare' cpufreq governor"
+	depends on CPU_FREQ
+select CPU_FREQ_GOV_COMMON
 
 config CPUFREQ_DT
 	tristate "Generic DT based cpufreq driver"
