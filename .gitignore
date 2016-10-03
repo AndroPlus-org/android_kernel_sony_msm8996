@@ -188,4 +188,4 @@ kernel/time/timeconst.h
 kernel/x509_certificate_list
 scripts/basic/bin2c
 
-/out/
+out/*
