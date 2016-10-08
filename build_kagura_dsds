@@ -1,5 +1,5 @@
 ### GCC 4.9.x
-### I'm using UBERTC toolchain https://bitbucket.org/UBERTC/aarch64-linux-android-4.9-kernel
+### I'm using UBERTC https://bitbucket.org/UBERTC/aarch64-linux-android-4.9-kernel
 
 export ARCH=arm64
 export PATH=~/aarch64-linux-android-4.9-kernel/bin/:$PATH
