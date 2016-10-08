@@ -911,7 +911,7 @@ static const char *config_cmdline = "";
 int __init early_init_dt_scan_chosen(unsigned long node, const char *uname,
 				     int depth, void *data)
 {
-	unsigned long l = 0;
+	int l = 0;
 	char *p = NULL;
 	char *cmdline = data;
 
