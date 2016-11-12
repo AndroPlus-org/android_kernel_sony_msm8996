@@ -370,16 +370,6 @@ kgsl_mem_entry_track_gpuaddr(struct kgsl_process_private *process,
 	return kgsl_mmu_get_gpuaddr(pagetable, &entry->memdesc);
 }
 
-static void kgsl_mem_entry_commit_process(struct kgsl_mem_entry *entry)
-{
-	if (!entry)
-		return;
-
-	spin_lock(&entry->priv->mem_lock);
-	idr_replace(&entry->priv->mem_idr, entry, entry->id);
-	spin_unlock(&entry->priv->mem_lock);
-}
-
 /**
  * kgsl_mem_entry_untrack_gpuaddr() - Untrack memory that is previously tracked
  * process - Pointer to process private to which memory belongs
@@ -423,8 +413,7 @@ kgsl_mem_entry_attach_process(struct kgsl_mem_entry *entry,
 		return -EBADF;
 	idr_preload(GFP_KERNEL);
 	spin_lock(&process->mem_lock);
-	/* Allocate the ID but don't attach the pointer just yet */
-	id = idr_alloc(&process->mem_idr, NULL, 1, 0, GFP_NOWAIT);
+	id = idr_alloc(&process->mem_idr, entry, 1, 0, GFP_NOWAIT);
 	spin_unlock(&process->mem_lock);
 	idr_preload_end();
 
@@ -2316,7 +2305,6 @@ long kgsl_ioctl_gpuobj_import(struct kgsl_device_private *dev_priv,
 
 	trace_kgsl_mem_map(entry, fd);
 
-	kgsl_mem_entry_commit_process(entry);
 	return 0;
 
 unmap:
@@ -2588,7 +2576,6 @@ long kgsl_ioctl_map_user_mem(struct kgsl_device_private *dev_priv,
 
 	trace_kgsl_mem_map(entry, param->fd);
 
-	kgsl_mem_entry_commit_process(entry);
 	return result;
 
 error_attach:
@@ -2995,7 +2982,6 @@ static struct kgsl_mem_entry *gpumem_alloc_entry(
 			entry->memdesc.size);
 	trace_kgsl_mem_alloc(entry);
 
-	kgsl_mem_entry_commit_process(entry);
 	return entry;
 err:
 	kfree(entry);
