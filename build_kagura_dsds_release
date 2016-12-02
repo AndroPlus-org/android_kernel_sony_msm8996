@@ -7,18 +7,18 @@ export PATH=~/aarch64-linux-android-4.9-kernel/bin/:$PATH
 export CROSS_COMPILE=aarch64-linux-android-
 
 export KBUILD_DIFFCONFIG=kagura_diffconfig
-make msm-perf_defconfig O=./out
-make O=./out
+make msm-perf_defconfig
+make
 
 echo "checking for compiled kernel..."
-if [ -f out/arch/arm64/boot/Image.gz-dtb ]
+if [ -f arch/arm64/boot/Image.gz-dtb ]
 then
 
 	echo "DONE"
 
 	### F8332
 	../final_files/mkbootimg \
-	--kernel out/arch/arm64/boot/Image.gz-dtb \
+	--kernel arch/arm64/boot/Image.gz-dtb \
 	--ramdisk ../final_files/ramdisk_kagura_dsds.cpio.gz \
 	--cmdline "androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 cma=16M@0-0xffffffff coherent_pool=2M enforcing=0" \
 	--base 0x80000000 \
