@@ -1,0 +1,52 @@
+### GCC 4.9.x
+### I'm using UBERTC https://bitbucket.org/UBERTC/aarch64-linux-android-4.9-kernel
+
+export ARCH=arm64
+export PATH=~/aarch64-linux-android-4.9-kernel/bin/:$PATH
+### See prefix of file names in the toolchain's bin directory
+export CROSS_COMPILE=aarch64-linux-android-
+
+export KBUILD_DIFFCONFIG=dora_diffconfig
+make msm-perf_defconfig
+make
+
+echo "checking for compiled kernel..."
+if [ -f arch/arm64/boot/Image.gz-dtb ]
+then
+
+	echo "DONE"
+
+	### F8132
+	../final_files/mkbootimg \
+	--kernel arch/arm64/boot/Image.gz-dtb \
+	--ramdisk ../final_files/ramdisk_dora_dsds.cpio.gz \
+	--cmdline "androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 cma=16M@0-0xffffffff coherent_pool=2M enforcing=0" \
+	--base 0x80000000 \
+	--pagesize 4096 \
+	--ramdisk_offset 0x02200000 \
+	--tags_offset 0x02000000 \
+	--output ../final_files/boot_F8132.img
+
+	### Version number
+	echo -n "Enter version number: "
+	read version
+
+	if [ -e ../final_files/boot_F8132.img ]
+	then
+
+		### Zip boot.img
+		cd ../final_files/
+		mv boot_F8132.img boot.img
+		zip XP_AndroPlusKernel_Permissive_v.zip boot.img
+		rm -f boot.img
+
+		### Copy zip to my desktop
+		cp XP_AndroPlusKernel_Permissive_v.zip uploads/XP_AndroPlusKernel_v$version.zip
+		cd ../kernel/
+	fi
+	
+	### Upload zips
+	sh ../final_files/ftp.sh
+	rm -fv `find ../final_files/uploads -type f`
+
+fi
