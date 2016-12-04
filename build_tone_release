@@ -69,10 +69,6 @@ then
 	--tags_offset 0x02000000 \
 	--output ../final_files/boot_F8332.img
 
-	### Version number
-	echo -n "Enter version number: "
-	read version
-
 	if [ -e ../final_files/boot_F8332.img ]
 	then
 
