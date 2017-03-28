@@ -471,7 +471,7 @@ static bool wakeup_source_blocker(struct wakeup_source *ws)
 {
 	unsigned int wslen = 0;
 
-	if (!is_display_on() && ws && ws->active) {
+	if (ws) {
 		wslen = strlen(ws->name);
 
 		if ((!enable_ipa_ws && !strncmp(ws->name, "IPA_WS", wslen)) ||
@@ -487,8 +487,12 @@ static bool wakeup_source_blocker(struct wakeup_source *ws)
 				!strncmp(ws->name, "NETLINK", wslen)) ||
 			(!enable_netmgr_wl_ws &&
 				!strncmp(ws->name, "netmgr_wl", wslen))) {
-			wakeup_source_deactivate(ws);
-			pr_info("forcefully deactivate wakeup source: %s\n", ws->name);
+			if (ws->active) {
+				wakeup_source_deactivate(ws);
+				pr_info("forcefully deactivate wakeup source: %s\n",
+					ws->name);
+			}
+
 			return true;
 		}
 	}
@@ -536,9 +540,6 @@ static void wakeup_source_activate(struct wakeup_source *ws)
 {
 	unsigned int cec;
 
-	if (wakeup_source_blocker(ws))
-		return;
-
 	/*
 	 * active wakeup source should bring the system
 	 * out of PM_SUSPEND_FREEZE state
@@ -563,13 +564,17 @@ static void wakeup_source_activate(struct wakeup_source *ws)
  */
 static void wakeup_source_report_event(struct wakeup_source *ws)
 {
-	ws->event_count++;
-	/* This is racy, but the counter is approximate anyway. */
-	if (events_check_enabled)
-		ws->wakeup_count++;
+	if (!is_display_on()) {
+		if (!wakeup_source_blocker(ws)) {
+			ws->event_count++;
+			/* This is racy, but the counter is approximate anyway. */
+			if (events_check_enabled)
+				ws->wakeup_count++;
 
-	if (!ws->active)
-		wakeup_source_activate(ws);
+			if (!ws->active)
+				wakeup_source_activate(ws);
+		}
+	}
 }
 
 /**
