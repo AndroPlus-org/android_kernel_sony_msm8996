@@ -16,10 +16,13 @@
 #include <linux/debugfs.h>
 #include <linux/types.h>
 #include <linux/moduleparam.h>
-#include <linux/display_state.h>
 #include <trace/events/power.h>
 
 #include "power.h"
+
+#ifdef CONFIG_STATE_NOTIFIER
+#include <linux/state_notifier.h>
+#endif
 
 static bool enable_qcom_rx_wakelock_ws = false;
 module_param(enable_qcom_rx_wakelock_ws, bool, 0644);
@@ -564,7 +567,7 @@ static void wakeup_source_activate(struct wakeup_source *ws)
  */
 static void wakeup_source_report_event(struct wakeup_source *ws)
 {
-	if (!is_display_on()) {
+	if (state_suspended) {
 		if (!wakeup_source_blocker(ws)) {
 			ws->event_count++;
 			/* This is racy, but the counter is approximate anyway. */
@@ -792,7 +795,7 @@ void pm_print_active_wakeup_sources(void)
 	struct wakeup_source *last_activity_ws = NULL;
 
 	// kinda pointless to force this routine during screen on
-	if (is_display_on())
+	if (!state_suspended)
 		return;
 
 	rcu_read_lock();
