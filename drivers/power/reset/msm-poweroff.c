@@ -293,7 +293,7 @@ static void msm_restart_prepare(const char *cmd)
 		} else if (!strncmp(cmd, "recovery", 8)) {
 			qpnp_pon_set_restart_reason(
 				PON_RESTART_REASON_RECOVERY);
-			__raw_writel(0x77665502, restart_reason);
+			__raw_writel(0x6f656d46, restart_reason); // oem-46
 		} else if (!strcmp(cmd, "rtc")) {
 			qpnp_pon_set_restart_reason(
 				PON_RESTART_REASON_RTC);
