@@ -6,6 +6,10 @@ export PATH=~/aarch64-linux-android-4.9-kernel/bin/:$PATH
 ### See prefix of file names in the toolchain's bin directory
 export CROSS_COMPILE=aarch64-linux-android-
 
+if [ -e out/arch/arm64/boot ]; then
+	rm -rf out/arch/arm64/boot
+fi
+
 export KBUILD_DIFFCONFIG=dora_diffconfig
 make msm-perf_defconfig O=./out
 make O=./out
