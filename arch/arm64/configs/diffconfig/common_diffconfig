@@ -153,7 +153,7 @@ CONFIG_SERIAL_MSM_HSL_CONSOLE=y
 #### AndroPlus Kernel ####
 ##########################
 
-CONFIG_LOCALVERSION="-v25"
+CONFIG_LOCALVERSION="-v26"
 CONFIG_LOCALVERSION_AUTO=n
 
 # Disable unwanted things
