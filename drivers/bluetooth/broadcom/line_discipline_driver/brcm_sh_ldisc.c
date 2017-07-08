@@ -704,32 +704,32 @@ static ssize_t store_snoop_enable(struct device *dev,
 
 /* structures specific for sysfs entries */
 static struct kobj_attribute ldisc_bdaddr =
-__ATTR(bdaddr, 0666, NULL,(void *)store_bdaddr);
+__ATTR(bdaddr, 0660, NULL,(void *)store_bdaddr);
 
 /* structures specific for sysfs entries */
 static struct kobj_attribute ldisc_install =
-__ATTR(install, 0666, (void *)show_install, (void *)store_install);
+__ATTR(install, 0660, (void *)show_install, (void *)store_install);
 
 /* structures specific for sysfs entries */
 static struct kobj_attribute ldisc_vendor_params =
-__ATTR(vendor_params, 0666, (void *)show_vendor_params, (void *)store_vendor_params);
+__ATTR(vendor_params, 0660, (void *)show_vendor_params, (void *)store_vendor_params);
 
 /* structures specific for sysfs entries */
 static struct kobj_attribute ldisc_bt_err =
-__ATTR(bt_err, 0666, (void *)show_bt_err, (void *)store_bt_err);
+__ATTR(bt_err, 0660, (void *)show_bt_err, (void *)store_bt_err);
 
 /* structures specific for sysfs entries */
 static struct kobj_attribute ldisc_fm_err =
-__ATTR(fm_err, 0666, (void *)show_fm_err, (void *)store_fm_err);
+__ATTR(fm_err, 0660, (void *)show_fm_err, (void *)store_fm_err);
 
 /* structures specific for sysfs entries */
 static struct kobj_attribute ldisc_fw_patchfile =
-__ATTR(fw_patchfile, 0666, NULL, (void *)store_fw_patchfile);
+__ATTR(fw_patchfile, 0660, NULL, (void *)store_fw_patchfile);
 
 #if V4L2_SNOOP_ENABLE
 /* structures specific for sysfs entries */
 static struct kobj_attribute ldisc_snoop_enable =
-__ATTR(snoop_enable, 0666, (void *)show_snoop_enable, (void *)store_snoop_enable);
+__ATTR(snoop_enable, 0660, (void *)show_snoop_enable, (void *)store_snoop_enable);
 #endif
 
 static struct attribute *uim_attrs[] = {
