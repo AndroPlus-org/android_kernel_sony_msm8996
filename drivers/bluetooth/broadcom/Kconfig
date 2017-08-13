@@ -13,8 +13,12 @@ config V4L2_ANT_DRIVER
 	tristate "BROADCOM V4L2 ANT Driver"
 	default n
 
+config V4L2_ANT_DEBUG
+	tristate "BROADCOM V4L2 ANT Driver Debug"
+	default n
+
 config V4L2_FM_DRIVER
 	tristate "BROADCOM V4L2 FM Driver"
 	default n
-	
+
 endmenu

@@ -44,7 +44,7 @@
 #endif
 
 /* set this module parameter to enable debug info */
-int ant_dbg_param = -1;
+int ant_dbg_param = 1;
 
 /*******************************************************************************
 **  Static Variables
